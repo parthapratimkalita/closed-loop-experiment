@@ -12,14 +12,17 @@ for i in range(5):
         experiment_runner.run_experiment(timelines[0])
         timeline0 = pd.DataFrame.from_dict(timelines[0])
 
+        # Print the initial timeline
         print(timeline0)
         time.sleep(50)
         filtered_df = read_experiment_data.read_experiment_data()
+        # Update timeline with response time and response data
         timeline0['rt'] = filtered_df['rt']
         timeline0['response'] = filtered_df['response']
 
         df_encoded = pd.get_dummies(timeline0[['word', 'color', 'response_transition']], drop_first=True)
 
+        # Prepare training data
         X_train = df_encoded.values
         y_train = timeline0['rt'].values
 
@@ -38,11 +41,13 @@ for i in range(5):
 
         time.sleep(50)
         filtered_df = read_experiment_data.read_experiment_data()
+        # Update timeline with response time and response data
         timeline0['rt'] = filtered_df['rt']
         timeline0['response'] = filtered_df['response']
 
         df_encoded = pd.get_dummies(timeline0[['word', 'color', 'response_transition']], drop_first=True)
 
+        # Prepare training data
         X_train = df_encoded.values
         y_train = timeline0['rt'].values
 
@@ -59,8 +64,10 @@ for i in range(5):
         timeline0_as_a_dictionary = timeline0.iloc[maximum_uncertinity].to_dict()
         print(timeline0_as_a_dictionary)
 
+        # Sample updated trials
         timelines = experiment_runner.sample_trials("update")
 
+        # Calculate frequency of the condition in updated trials
         frequency = []
         for i in range(len(timelines)):
             p = 0
@@ -73,16 +80,19 @@ for i in range(5):
 
         max_frequency = np.argmax(frequency)
 
+        # Run the experiment with the timeline having maximum frequency
         timeline0 = pd.DataFrame.from_dict(timelines[max_frequency])
         experiment_runner.run_experiment(timelines[max_frequency])
 
         time.sleep(50)
         filtered_df = read_experiment_data.read_experiment_data()
+        # Update timeline with response time and response data
         timeline0['rt'] = filtered_df['rt']
         timeline0['response'] = filtered_df['response']
 
         df_encoded = pd.get_dummies(timeline0[['word', 'color', 'response_transition']], drop_first=True)
 
+        # Prepare training data
         X_train = df_encoded.values
         y_train = timeline0['rt'].values
 
