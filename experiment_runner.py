@@ -11,8 +11,8 @@ from sweetpea import (
 Stroop Task
 ******************************
 factors (levels):
-- current color (red, blue, green, brown)
-- current word (red, blue, green, brown)
+- current color (red, blue, green, yellow)
+- current word (red, blue, green, yellow)
 - congruency (congruent, incongruent): Factor dependent on color and word.
 - correct response (up, down, left right): Factor dependent on color.
 - response Transition (repetition, switch). Factor dependent on response:
@@ -24,7 +24,7 @@ design:
 """
 
 
-# DEFINE CONGRUENCY FACTOR
+# Define congruency factor
 def congruent(color, word):
     return color == word
 
@@ -32,9 +32,7 @@ def congruent(color, word):
 def incongruent(color, word):
     return not congruent(color, word)
 
-
-# DEFINE RESPONSE FACTOR
-
+# Define response factor
 def response_left(color):
     return color == 'red'
 
@@ -43,8 +41,13 @@ def response_right(color):
     return color == 'green'
 
 
-# DEFINE RESPONSE TRANSITION FACTOR
+def response_up(color):
+    return color == "blue"
 
+def response_down(color):
+    return color == "yellow"
+
+# Define response transition factor
 def response_repeat(response):
     return response[0] == response[-1]
 
@@ -52,25 +55,27 @@ def response_repeat(response):
 def response_switch(response):
     return not response_repeat(response)
 
-
-# defining the predicate for the f-level of the "correct response" parameter
+# Defining the predicate for the f-level of the "correct response" parameter
 def is_correct_f(color):
     return color == 'red'
 
-    # defining the predicate for the j-level of the "correct response" parameter
-
-
+# Defining the predicate for the j-level of the "correct response" parameter
 def is_correct_j(color):
     return color == 'green'
 
+# Defining the predicate for the r-level of the "correct response" parameter
+def is_correct_j(color):
+    return color == 'blue'
 
-# positive feedback after correct responses (remember the correct data variable has boolean levels itself)
+# Defining the predicate for the z-level of the "correct response" parameter
+def is_correct_j(color):
+    return color == 'yellow'
+
+# Positive feedback after correct responses (remember the correct data variable has boolean levels itself)
 def is_positive_feedback(correct):
     return correct
 
-    # negative feedback after incorrect responses
-
-
+# Negative feedback after incorrect responses
 def is_negative_feedback(correct):
     return not correct
 
@@ -78,45 +83,41 @@ def is_negative_feedback(correct):
 def sample_trials(iteration):
     from sweetpea import DerivedLevel
 
-    # DEFINE COLOR AND WORD FACTORS
+    # Define color and word factors
 
-    color = Factor("color", ["red", "green"])
-    word = Factor("word", ["red", "green"])
+    color      = Factor("color",  ["red", "green", "blue", "yellow"])
+    word       = Factor("word", ["red", "green", "blue", "yellow"])
 
-    conLevel = DerivedLevel("con", WithinTrial(congruent, [color, word]))
-    incLevel = DerivedLevel("inc", WithinTrial(incongruent, [color, word]))
+    # Define congruency levels based on color and word
+    conLevel = DerivedLevel("con", WithinTrial(congruent,   [color, word]))
+    incLevel = DerivedLevel("inc", WithinTrial(incongruent,   [color, word]))
+    congruency = Factor("congruency", [conLevel, incLevel])
 
-    congruency = Factor("congruency", [
-        conLevel,
-        incLevel
-    ])
-
+    # Define response levels based on color
     response = Factor("correct_response", [
         DerivedLevel("f", WithinTrial(response_left, [color])),
         DerivedLevel("j", WithinTrial(response_right, [color])),
     ])
 
+    # Define response transition levels based on response
     resp_transition = Factor("response_transition", [
         DerivedLevel("repeat", Transition(response_repeat, [response])),
         DerivedLevel("switch", Transition(response_switch, [response]))
     ])
 
-    # DEFINE SEQUENCE CONSTRAINTS
-
+    # Define sequence constraints
     k = 7
     constraints = [AtMostKInARow(k, resp_transition)]
 
-    # DEFINE EXPERIMENT
-
-    design = [color, word, congruency, resp_transition, response]
-    crossing = [color, word, resp_transition]
+    # Define experiment
+    design       = [color, word, congruency, resp_transition, response]
+    crossing     = [color, word, resp_transition]
 
     block = CrossBlock(design, crossing, constraints)
 
-    # SOLVE
-
-    if iteration == 'initial':
-        experiments = synthesize_trials(block, 5, CMSGen)
+    # Solve
+    if iteration == "initial":
+        experiments  = synthesize_trials(block, 5, CMSGen)
     # Or:
     # experiments  = synthesize_trials(block, 5, IterateGen)
     # experiments  = synthesize_trials(block, 5, IterateILPGen)
@@ -124,8 +125,8 @@ def sample_trials(iteration):
         experiments = synthesize_trials(block, 5, RandomGen(acceptable_error=3))
     # experiments  = synthesize_trials(block, 5, RandomGen(acceptable_error=3))
 
+    # Convert experiments to dictionary format
     exp_block = experiments_to_dicts(block, experiments)
-
     timelines = experiments_to_dicts(block, experiments)
 
     timeline0 = pd.DataFrame.from_dict(timelines[0])
@@ -157,68 +158,70 @@ def run_experiment(timeline):
     # Creating the block
     instructions_block = Block(instructions_sequence)
 
-    # import the functionality from sweetbean
+
+    # Import the functionality from sweetbean
     from sweetbean.parameter import TimelineVariable
 
-    ## declare the timeline variables
+    ## Declare the timeline variables
 
-    # color: The name has to be color (it is the name in the timeline), and it has the levels red and green
-    color = TimelineVariable(name="color", levels=["red", "green"])
+    # Color: The name has to be color (it is the name in the timeline), and it has the levels red, green, blue and yellow
+    color = TimelineVariable(name="color", levels=["red", "green", "blue", "yellow"])
 
-    # word: The name has to be word (it is the name in the timeline), and it has the levels RED and GREEN
-    word = TimelineVariable(name="word", levels=["RED", "GREEN"])
+    # Word: The name has to be word (it is the name in the timeline), and it has the levels RED, GREEN, BLUE and YELLOW
+    word = TimelineVariable(name="word", levels=["RED", "GREEN", "BLUE", "YELLOW"])
 
-    # importing the functionality
+
+    # Importing the functionality
     from sweetbean.parameter import DerivedLevel
 
-    # declare the f level
+    # Declare the f level
     correct_response_f = DerivedLevel(value='f', predicate=is_correct_f, factors=[color])
 
-    # declare the j level
+    # Declare the j level
     correct_response_j = DerivedLevel('j', is_correct_j, [color])
 
-    # importing the functionality
+    # Importing the functionality
     from sweetbean.parameter import DerivedParameter
 
-    # declare the "correct response" parameter
+    # Declare the "correct response" parameter
     correct_response = DerivedParameter(name='correct_response', levels=[correct_response_f, correct_response_j])
 
-    # imports
+    # Imports
     from sweetbean.stimulus import TextStimulus
 
-    # declaring the stimulus
+    # Declaring the stimulus
     stroop = TextStimulus(duration=2500, text=word, color=color, choices=['j', 'f'], correct_key=correct_response)
 
-    # import
+    # Import
     from sweetbean.parameter import DataVariable
 
-    # declare the data variable
+    # Declare the data variable
     correct = DataVariable('correct', [True, False])
 
     positive_word_feedback = DerivedLevel('correct', is_positive_feedback, [correct], 1)
     negative_word_feedback = DerivedLevel('false', is_negative_feedback, [correct], 1)
 
     feedback_word = DerivedParameter('feedback_word', [positive_word_feedback, negative_word_feedback])
-    # create the levels
+    # Create the levels
     positive_color_feedback = DerivedLevel('green', is_positive_feedback, [correct], 1)
     negative_color_feedback = DerivedLevel('red', is_negative_feedback, [correct], 1)
-    # create the parameter
+    # Create the parameter
     feedback_color = DerivedParameter('feedback_color', [positive_color_feedback, negative_color_feedback])
     feedback = TextStimulus(duration=1000, text=feedback_word, color=feedback_color)
 
-    # import the functionality from sweetbean to create experiments
+    # Import the functionality from sweetbean to create experiments
     from sweetbean.sequence import Block, Experiment
 
-    # fixation stimulus
+    # Fixation stimulus
     fixation = TextStimulus(800, '+')
 
-    # create a stimulus sequence
+    # Create a stimulus sequence
     stimulus_sequence = [fixation, stroop, feedback]
 
-    # create the trial block
+    # Create the trial block
     trial_block = Block(stimulus_sequence, timeline)
 
-    # create the experiment from the two blocks
+    # Create the experiment from the two blocks
     experiment = Experiment([instructions_block, trial_block])
     print(experiment)
 
