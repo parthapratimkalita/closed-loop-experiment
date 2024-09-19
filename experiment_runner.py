@@ -33,18 +33,16 @@ def incongruent(color, word):
     return not congruent(color, word)
 
 # Define response factor
-def response_left(color):
-    return color == 'red'
+def response_r(color):
+    return color == "red"
 
+def response_g(color):
+    return color == "green"
 
-def response_right(color):
-    return color == 'green'
-
-
-def response_up(color):
+def response_b(color):
     return color == "blue"
 
-def response_down(color):
+def response_y(color):
     return color == "yellow"
 
 # Define response transition factor
@@ -56,19 +54,19 @@ def response_switch(response):
     return not response_repeat(response)
 
 # Defining the predicate for the f-level of the "correct response" parameter
-def is_correct_f(color):
+def is_correct_r(color):
     return color == 'red'
 
 # Defining the predicate for the j-level of the "correct response" parameter
-def is_correct_j(color):
+def is_correct_g(color):
     return color == 'green'
 
 # Defining the predicate for the r-level of the "correct response" parameter
-def is_correct_j(color):
+def is_correct_b(color):
     return color == 'blue'
 
 # Defining the predicate for the z-level of the "correct response" parameter
-def is_correct_j(color):
+def is_correct_y(color):
     return color == 'yellow'
 
 # Positive feedback after correct responses (remember the correct data variable has boolean levels itself)
@@ -95,8 +93,10 @@ def sample_trials(iteration):
 
     # Define response levels based on color
     response = Factor("correct_response", [
-        DerivedLevel("f", WithinTrial(response_left, [color])),
-        DerivedLevel("j", WithinTrial(response_right, [color])),
+        DerivedLevel("r", WithinTrial(response_r,   [color])),
+        DerivedLevel("g", WithinTrial(response_g,   [color])),
+        DerivedLevel("b", WithinTrial(response_b, [color])),
+        DerivedLevel("y", WithinTrial(response_y, [color])),
     ])
 
     # Define response transition levels based on response
@@ -118,12 +118,8 @@ def sample_trials(iteration):
     # Solve
     if iteration == "initial":
         experiments  = synthesize_trials(block, 5, CMSGen)
-    # Or:
-    # experiments  = synthesize_trials(block, 5, IterateGen)
-    # experiments  = synthesize_trials(block, 5, IterateILPGen)
     else:
-        experiments = synthesize_trials(block, 5, RandomGen(acceptable_error=3))
-    # experiments  = synthesize_trials(block, 5, RandomGen(acceptable_error=3))
+        experiments  = synthesize_trials(block, 5, RandomGen(acceptable_error=3))
 
     # Convert experiments to dictionary format
     exp_block = experiments_to_dicts(block, experiments)
@@ -143,21 +139,22 @@ def run_experiment(timeline):
         text="Welcome to our experiment.<br />Here, you will have to react to the ink color of a color word.<br />Press SPACE to continue",
         choices=[' '])
     instruction_red = TextStimulus(
-        text="If the ink color is <b>red</b>,<br />press <b>F</b> with your left index finger as fast as possible.<br />Press F to continue",
-        choices=['f'])
+        text="If the ink color is <b>red</b>,<br />press <b>R</b> with your index finger as fast as possible.<br />Press R to continue",
+        choices=['r'])
     instruction_green = TextStimulus(
-        text="If the ink color is <b>green</b>,<br>press <b>J</b> with your right index finger as fast as possible.<br />Press J to continue",
-        choices=['j'])
+        text="If the ink color is <b>green</b>,<br>press <b>G</b> with your index finger as fast as possible.<br />Press G to continue",
+        choices=['g'])
+    instruction_blue = TextStimulus(text="If the ink color is <b>blue<b>,<br>press <b>B<b> with your index finger as fast as possible.<br>Press B to continue", choices=['b'])
+    instruction_yellow = TextStimulus(text="If the ink color is <b>yellow<b>,<br>press <b>Y<b> with your index finger as fast as possible.<br>Press Y to continue", choices=['y'])
     instructions_end = TextStimulus(
         text="The experiment will start now.<br />React as fast and as accurate as possible.<br />Remember:<br />React to the ink color not the meaning of the word.<br />Press SPACE to continue",
         choices=[' '])
 
     # Creating the stimulus sequence
-    instructions_sequence = [welcome, instruction_red, instruction_green, instructions_end]
+    instructions_sequence = [welcome, instruction_red, instruction_green, instruction_blue, instruction_yellow, instructions_end]
 
     # Creating the block
     instructions_block = Block(instructions_sequence)
-
 
     # Import the functionality from sweetbean
     from sweetbean.parameter import TimelineVariable
@@ -174,23 +171,29 @@ def run_experiment(timeline):
     # Importing the functionality
     from sweetbean.parameter import DerivedLevel
 
-    # Declare the f level
-    correct_response_f = DerivedLevel(value='f', predicate=is_correct_f, factors=[color])
+    # Declare the r level
+    correct_response_r = DerivedLevel(value='r', predicate=is_correct_r, factors=[color])
 
     # Declare the j level
-    correct_response_j = DerivedLevel('j', is_correct_j, [color])
+    correct_response_g = DerivedLevel('g', is_correct_g, [color])
+
+    # Declare the b level
+    correct_response_b = DerivedLevel('b', is_correct_b, [color])
+
+    # Declare the y level
+    correct_response_y = DerivedLevel('y', is_correct_y, [color])
 
     # Importing the functionality
     from sweetbean.parameter import DerivedParameter
 
     # Declare the "correct response" parameter
-    correct_response = DerivedParameter(name='correct_response', levels=[correct_response_f, correct_response_j])
+    correct_response = DerivedParameter(name='correct_response', levels=[correct_response_r, correct_response_g, correct_response_b, correct_response_y])
 
     # Imports
     from sweetbean.stimulus import TextStimulus
 
     # Declaring the stimulus
-    stroop = TextStimulus(duration=2500, text=word, color=color, choices=['j', 'f'], correct_key=correct_response)
+    stroop = TextStimulus(duration=2500, text=word, color=color, choices=['r', 'g', 'b', 'y'], correct_key=correct_response)
 
     # Import
     from sweetbean.parameter import DataVariable
