@@ -1,0 +1,4 @@
+numpy~=2.0.2
+pandas~=2.2.3
+sweetbean~=0.0.42
+sweetpea~=0.2.7
