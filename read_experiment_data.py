@@ -1,8 +1,7 @@
-import json
-import os
-import re
-
 import pandas as pd
+import json
+import re
+import os
 
 
 def read_experiment_data():
@@ -16,18 +15,10 @@ def read_experiment_data():
     with open(file_path, 'r') as file:
         data = json.load(file)
 
-    # Define the regex pattern to match ">red<" or ">green<"
     pattern = re.compile(r'>red</div>|>green</div>')
-
-    # Filter the rows based on the regex pattern
     filtered_data = [row for row in data if pattern.search(row['stimulus'])]
 
-    filtered_df = pd.DataFrame(filtered_data)
-
-    columns = ['rt', 'response', 'stimulus']
-
-    filtered_df = filtered_df[columns]
-
+    filtered_df = pd.DataFrame(filtered_data)[['rt', 'response', 'stimulus']]
     filtered_df['rt'] = filtered_df['rt'].fillna(3000)
     filtered_df['response'] = filtered_df['response'].fillna('j')
 
