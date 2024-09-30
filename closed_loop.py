@@ -39,7 +39,8 @@ for i in range(5):
             posterior_means=0,
             posterior_variances=0,
             n_samples_mcmc=n_samples_mcmc,
-            step_size=step_size, X_train=X_train,
+            step_size=step_size,
+            X_train=X_train,
             y_train=y_train
         )
     elif i < 2:
@@ -69,7 +70,8 @@ for i in range(5):
             posterior_means=posterior_means,
             posterior_variances=posterior_variances,
             n_samples_mcmc=n_samples_mcmc,
-            step_size=step_size, X_train=X_train,
+            step_size=step_size,
+            X_train=X_train,
             y_train=y_train
         )
     else:
@@ -126,6 +128,7 @@ for i in range(5):
             posterior_means=posterior_means,
             posterior_variances=posterior_variances,
             n_samples_mcmc=n_samples_mcmc,
-            step_size=step_size, X_train=X_train,
+            step_size=step_size,
+            X_train=X_train,
             y_train=y_train
         )
