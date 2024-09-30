@@ -21,7 +21,6 @@ design:
 - counterbalancing color x word x response Transition
 - no more than 7 response repetitions in a row
 - no more than 7 response switches in a row
-
 """
 
 
@@ -37,11 +36,11 @@ def incongruent(color, word):
 # DEFINE RESPONSE FACTOR
 
 def response_left(color):
-    return color == "red"
+    return color == 'red'
 
 
 def response_right(color):
-    return color == "green"
+    return color == 'green'
 
 
 # DEFINE RESPONSE TRANSITION FACTOR
@@ -58,7 +57,7 @@ def response_switch(response):
 def is_correct_f(color):
     return color == 'red'
 
-    # defining the predicate for the j-level of the "correct response" paramater
+    # defining the predicate for the j-level of the "correct response" parameter
 
 
 def is_correct_j(color):
@@ -116,7 +115,7 @@ def sample_trials(iteration):
 
     # SOLVE
 
-    if iteration == "initial":
+    if iteration == 'initial':
         experiments = synthesize_trials(block, 5, CMSGen)
     # Or:
     # experiments  = synthesize_trials(block, 5, IterateGen)
@@ -140,16 +139,16 @@ def run_experiment(timeline):
 
     # Creating the Instructions
     welcome = TextStimulus(
-        text="Welcome to our experiment.<br>Here, you will have to react to the ink color of a color word.<br>Press SPACE to continue",
+        text="Welcome to our experiment.<br />Here, you will have to react to the ink color of a color word.<br />Press SPACE to continue",
         choices=[' '])
     instruction_red = TextStimulus(
-        text="If the ink color is <b>red<b>,<br>press <b>F<b> with your left index finger as fast as possible.<br>Press F to continue",
+        text="If the ink color is <b>red</b>,<br />press <b>F</b> with your left index finger as fast as possible.<br />Press F to continue",
         choices=['f'])
     instruction_green = TextStimulus(
-        text="If the ink color is <b>green<b>,<br>press <b>J<b> with your right index finger as fast as possible.<br>Press J to continue",
+        text="If the ink color is <b>green</b>,<br>press <b>J</b> with your right index finger as fast as possible.<br />Press J to continue",
         choices=['j'])
     instructions_end = TextStimulus(
-        text="The experiment will start now.<br>React as fast an as accurate as possible.<br>Remember:<br>React to the ink color not the meaning of the word.<br>Ress SPACE to continus",
+        text="The experiment will start now.<br />React as fast an as accurate as possible.<br />Remember:<br />React to the ink color not the meaning of the word.<br />Press SPACE to continue",
         choices=[' '])
 
     # Creating the stimulus sequence
