@@ -148,7 +148,7 @@ def run_experiment(timeline):
         text="If the ink color is <b>green</b>,<br>press <b>J</b> with your right index finger as fast as possible.<br />Press J to continue",
         choices=['j'])
     instructions_end = TextStimulus(
-        text="The experiment will start now.<br />React as fast an as accurate as possible.<br />Remember:<br />React to the ink color not the meaning of the word.<br />Press SPACE to continue",
+        text="The experiment will start now.<br />React as fast and as accurate as possible.<br />Remember:<br />React to the ink color not the meaning of the word.<br />Press SPACE to continue",
         choices=[' '])
 
     # Creating the stimulus sequence
