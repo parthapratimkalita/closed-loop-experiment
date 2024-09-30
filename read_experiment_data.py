@@ -1,7 +1,9 @@
-import pandas as pd
 import json
-import re
 import os
+import re
+
+import pandas as pd
+
 
 def read_experiment_data():
     #  Load the JSON file
@@ -20,17 +22,13 @@ def read_experiment_data():
     # Filter the rows based on the regex pattern
     filtered_data = [row for row in data if pattern.search(row['stimulus'])]
 
-
     filtered_df = pd.DataFrame(filtered_data)
 
     columns = ['rt', 'response', 'stimulus']
 
-
     filtered_df = filtered_df[columns]
 
-    
     filtered_df['rt'] = filtered_df['rt'].fillna(3000)
     filtered_df['response'] = filtered_df['response'].fillna('j')
 
     return filtered_df
-

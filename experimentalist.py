@@ -1,16 +1,12 @@
-import theorist
-
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
 
 
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
-def sample_condition(df, beta_samples):
 
+def sample_condition(df, beta_samples):
     df_encoded = pd.get_dummies(df[['word', 'color', 'response_transition']], drop_first=True)
     # Dependent variable (correct/incorrect)
 
@@ -28,9 +24,8 @@ def sample_condition(df, beta_samples):
     lower_bound_test = np.percentile(predicted_probs_test, 2.5, axis=0)
     upper_bound_test = np.percentile(predicted_probs_test, 97.5, axis=0)
 
-    uncertinity = upper_bound_test - lower_bound_test
-    print(f"uncertinity: {uncertinity}")
-    max_uncertinity = np.argmax(uncertinity)
+    uncertainty = upper_bound_test - lower_bound_test
+    print(f"Uncertainty: {uncertainty}")
+    max_uncertainty = np.argmax(uncertainty)
 
-    return max_uncertinity
-
+    return max_uncertainty

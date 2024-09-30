@@ -1,13 +1,11 @@
-from sweetpea import (
-    Factor, DerivedLevel, WithinTrial, Transition, AtMostKInARow,
-    CrossBlock, synthesize_trials, print_experiments, tabulate_experiments,
-    CMSGen, IterateGen, RandomGen, IterateILPGen, experiments_to_dicts
-)
-
+import os
+import webbrowser
 
 import pandas as pd
-import webbrowser
-import os
+from sweetpea import (
+    Factor, WithinTrial, Transition, AtMostKInARow,
+    CrossBlock, synthesize_trials, CMSGen, RandomGen, experiments_to_dicts
+)
 
 """
 Stroop Task
@@ -26,75 +24,78 @@ design:
 
 """
 
+
 # DEFINE CONGRUENCY FACTOR
 def congruent(color, word):
     return color == word
 
+
 def incongruent(color, word):
     return not congruent(color, word)
+
 
 # DEFINE RESPONSE FACTOR
 
 def response_left(color):
     return color == "red"
 
+
 def response_right(color):
     return color == "green"
+
 
 # DEFINE RESPONSE TRANSITION FACTOR
 
 def response_repeat(response):
     return response[0] == response[-1]
 
+
 def response_switch(response):
     return not response_repeat(response)
+
 
 # defining the predicate for the f-level of the "correct response" parameter
 def is_correct_f(color):
     return color == 'red'
 
     # defining the predicate for the j-level of the "correct response" paramater
+
+
 def is_correct_j(color):
     return color == 'green'
+
 
 # positive feedback after correct responses (remember the correct data variable has boolean levels itself)
 def is_positive_feedback(correct):
     return correct
 
     # negative feedback after incorrect responses
+
+
 def is_negative_feedback(correct):
     return not correct
 
-def sample_trials(iteration):
 
+def sample_trials(iteration):
     from sweetpea import DerivedLevel
 
     # DEFINE COLOR AND WORD FACTORS
 
-    color      = Factor("color",  ["red", "green"])
-    word       = Factor("word", ["red", "green"])
+    color = Factor("color", ["red", "green"])
+    word = Factor("word", ["red", "green"])
 
-
-
-
-
-    conLevel = DerivedLevel("con", WithinTrial(congruent,   [color, word]))
-    incLevel = DerivedLevel("inc", WithinTrial(incongruent,   [color, word]))
+    conLevel = DerivedLevel("con", WithinTrial(congruent, [color, word]))
+    incLevel = DerivedLevel("inc", WithinTrial(incongruent, [color, word]))
 
     congruency = Factor("congruency", [
         conLevel,
         incLevel
     ])
 
-
-
-
     response = Factor("correct_response", [
-        DerivedLevel("f", WithinTrial(response_left,   [color])),
-        DerivedLevel("j", WithinTrial(response_right,   [color])),
+        DerivedLevel("f", WithinTrial(response_left, [color])),
+        DerivedLevel("j", WithinTrial(response_right, [color])),
     ])
-
-
 
     resp_transition = Factor("response_transition", [
         DerivedLevel("repeat", Transition(response_repeat, [response])),
@@ -108,30 +109,29 @@ def sample_trials(iteration):
 
     # DEFINE EXPERIMENT
 
-    design       = [color, word, congruency, resp_transition, response]
-    crossing     = [color, word, resp_transition]
+    design = [color, word, congruency, resp_transition, response]
+    crossing = [color, word, resp_transition]
 
-    block        = CrossBlock(design, crossing, constraints)
+    block = CrossBlock(design, crossing, constraints)
 
     # SOLVE
 
     if iteration == "initial":
-        experiments  = synthesize_trials(block, 5, CMSGen)
+        experiments = synthesize_trials(block, 5, CMSGen)
     # Or:
     # experiments  = synthesize_trials(block, 5, IterateGen)
     # experiments  = synthesize_trials(block, 5, IterateILPGen)
     else:
-        experiments  = synthesize_trials(block, 5, RandomGen(acceptable_error=3))
-    #experiments  = synthesize_trials(block, 5, RandomGen(acceptable_error=3))
-
+        experiments = synthesize_trials(block, 5, RandomGen(acceptable_error=3))
+    # experiments  = synthesize_trials(block, 5, RandomGen(acceptable_error=3))
 
     exp_block = experiments_to_dicts(block, experiments)
 
     timelines = experiments_to_dicts(block, experiments)
 
-
     timeline0 = pd.DataFrame.from_dict(timelines[0])
     return timelines
+
 
 def run_experiment(timeline):
     # imports
@@ -139,18 +139,24 @@ def run_experiment(timeline):
     from sweetbean.sequence import Block
 
     # Creating the Instructions
-    welcome = TextStimulus(text="Welcome to our experiment.<br>Here, you will have to react to the ink color of a color word.<br>Press SPACE to continue", choices=[' '])
-    instruction_red = TextStimulus(text="If the ink color is <b>red<b>,<br>press <b>F<b> with your left index finger as fast as possible.<br>Press F to continue", choices=['f'])
-    instruction_green = TextStimulus(text="If the ink color is <b>green<b>,<br>press <b>J<b> with your right index finger as fast as possible.<br>Press J to continue", choices=['j'])
-    instructions_end = TextStimulus(text="The experiment will start now.<br>React as fast an as accurate as possible.<br>Remember:<br>React to the ink color not the meaning of the word.<br>Ress SPACE to continus", choices=[' '])
+    welcome = TextStimulus(
+        text="Welcome to our experiment.<br>Here, you will have to react to the ink color of a color word.<br>Press SPACE to continue",
+        choices=[' '])
+    instruction_red = TextStimulus(
+        text="If the ink color is <b>red<b>,<br>press <b>F<b> with your left index finger as fast as possible.<br>Press F to continue",
+        choices=['f'])
+    instruction_green = TextStimulus(
+        text="If the ink color is <b>green<b>,<br>press <b>J<b> with your right index finger as fast as possible.<br>Press J to continue",
+        choices=['j'])
+    instructions_end = TextStimulus(
+        text="The experiment will start now.<br>React as fast an as accurate as possible.<br>Remember:<br>React to the ink color not the meaning of the word.<br>Ress SPACE to continus",
+        choices=[' '])
 
     # Creating the stimulus sequence
     instructions_sequence = [welcome, instruction_red, instruction_green, instructions_end]
 
     # Creating the block
     instructions_block = Block(instructions_sequence)
-
-
 
     # import the functionality from sweetbean
     from sweetbean.parameter import TimelineVariable
@@ -162,8 +168,6 @@ def run_experiment(timeline):
 
     # word: The name has to be word (it is the name in the timeline), and it has the levels RED and GREEN
     word = TimelineVariable(name="word", levels=["RED", "GREEN"])
-
-    
 
     # importing the functionality
     from sweetbean.parameter import DerivedLevel
@@ -192,8 +196,6 @@ def run_experiment(timeline):
     # declare the data variable
     correct = DataVariable('correct', [True, False])
 
-    
-
     positive_word_feedback = DerivedLevel('correct', is_positive_feedback, [correct], 1)
     negative_word_feedback = DerivedLevel('false', is_negative_feedback, [correct], 1)
 
@@ -203,7 +205,7 @@ def run_experiment(timeline):
     negative_color_feedback = DerivedLevel('red', is_negative_feedback, [correct], 1)
     # create the parameter
     feedback_color = DerivedParameter('feedback_color', [positive_color_feedback, negative_color_feedback])
-    feedback = TextStimulus(duration=1000, text=feedback_word,color=feedback_color)
+    feedback = TextStimulus(duration=1000, text=feedback_word, color=feedback_color)
 
     # import the functionality from sweetbean to create experiments
     from sweetbean.sequence import Block, Experiment
@@ -220,7 +222,6 @@ def run_experiment(timeline):
     # create the experiment from the two blocks
     experiment = Experiment([instructions_block, trial_block])
     print(experiment)
-
 
     # Construct the full path to the experimental.json file in the Downloads folder
     downloads_folder = os.path.expanduser('~/Downloads')
@@ -274,8 +275,6 @@ def run_experiment(timeline):
     # Write the modified content back to the file
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(modified_content)
-
-
 
     # Specify the path to your HTML file
     file_path = 'index.html'
