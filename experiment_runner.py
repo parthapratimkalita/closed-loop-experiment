@@ -142,10 +142,13 @@ def run_experiment(timeline):
         text="If the ink color is <b>red</b>,<br />press <b>R</b> with your index finger as fast as possible.<br />Press R to continue",
         choices=['r'])
     instruction_green = TextStimulus(
-        text="If the ink color is <b>green</b>,<br>press <b>G</b> with your index finger as fast as possible.<br />Press G to continue",
+        text="If the ink color is <b>green</b>,<br />press <b>G</b> with your index finger as fast as possible.<br />Press G to continue",
         choices=['g'])
-    instruction_blue = TextStimulus(text="If the ink color is <b>blue<b>,<br>press <b>B<b> with your index finger as fast as possible.<br>Press B to continue", choices=['b'])
-    instruction_yellow = TextStimulus(text="If the ink color is <b>yellow<b>,<br>press <b>Y<b> with your index finger as fast as possible.<br>Press Y to continue", choices=['y'])
+    instruction_blue = TextStimulus(text="If the ink color is <b>blue</b>,<br />press <b>B</b> with your index finger as fast as possible.<br />Press B to continue",
+                                    choices=['b'])
+    instruction_yellow = TextStimulus(
+        text="If the ink color is <b>yellow</b>,<br />press <b>Y</b> with your index finger as fast as possible.<br />Press Y to continue",
+        choices=['y'])
     instructions_end = TextStimulus(
         text="The experiment will start now.<br />React as fast and as accurate as possible.<br />Remember:<br />React to the ink color not the meaning of the word.<br />Press SPACE to continue",
         choices=[' '])
